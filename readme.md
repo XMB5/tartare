@@ -1,5 +1,5 @@
 # tartare
-Video server
+HTML5 Video Library
 ![screenshot](screenshot.png)
 
 ## Features
@@ -10,11 +10,13 @@ Video server
 ## Limitations
 - No transcoding
 - No web player
+- No support for old browsers
 
 ## Installation
 
 ### Install through docker
 - `docker run -p 3000:3000 -v '/my/videos:/videos:ro' -v 'tartare_cache:/cache' xmb5/tartare`
+    - now go to http://localhost:3000
 - [Sample docker-compose.yml](docker-compose.yml)
 
 ### Or, install the traditional way
@@ -27,6 +29,7 @@ cd tartare
 npm i
 # run
 TARTARE_VIDEOS=/my/videos TARTARE_CACHE=/tartare_cache node tartare.js
+# web server running on http://localhost:3000
 ```
 
 ## Options
