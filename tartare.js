@@ -23,7 +23,7 @@ const init = async () => {
     await VideoManager.init(videosDir, cacheDir);
 
     const port = parseInt(process.env.TARTARE_PORT) || 3000;
-    const host = parseInt(process.env.TARTARE_HOST) || 'localhost';
+    const host = process.env.TARTARE_HOST || 'localhost';
 
     const server = Hapi.server({port, host});
 
