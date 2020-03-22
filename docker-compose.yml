@@ -1,0 +1,7 @@
+version: '3.7'
+services:
+  tartare:
+    image: 'xmb5/tartare'
+    volumes:
+      - '/my/videos:/videos:ro'
+      - 'tartare_cache:/cache'

@@ -9,19 +9,23 @@ const staticDir = path.join(__dirname, 'static');
 
 const init = async () => {
 
-    const videosDir = process.argv[2];
-    const cacheDir = process.argv[3];
-    if (!videosDir || !cacheDir) {
-        console.error('usage: tartare.js <videos_dir> <cache_dir>');
+    const videosDir = process.env['TARTARE_VIDEOS'];
+    if (!videosDir) {
+        console.error('must set TARTARE_VIDEOS environment variable');
+        process.exit(1);
+    }
+    const cacheDir = process.env['TARTARE_CACHE'];
+    if (!cacheDir) {
+        console.error('must set TARTARE_CACHE environment variable');
         process.exit(1);
     }
 
     await VideoManager.init(videosDir, cacheDir);
 
-    const server = Hapi.server({
-        port: 3000,
-        host: 'localhost'
-    });
+    const port = parseInt(process.env.TARTARE_PORT) || 3000;
+    const host = parseInt(process.env.TARTARE_HOST) || 'localhost';
+
+    const server = Hapi.server({port, host});
 
     await server.register(inert);
 
@@ -33,6 +37,16 @@ const init = async () => {
                 path: staticDir,
                 redirectToSlash: true,
                 index: true
+            }
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/videos/{any*}',
+        handler: {
+            directory: {
+                path: VideoManager.videosDir
             }
         }
     });

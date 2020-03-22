@@ -17,6 +17,8 @@ const THUMBNAIL_FILE_FORMAT = 'jpeg'; //png or jpeg
 
 const CACHE_HASH_ALGORITHM = 'sha256';
 
+const RESCAN_INTERVAL = 5 * 60 * 1000;
+
 class VideoManager {
 
     static hash(relPath) {
@@ -30,7 +32,7 @@ class VideoManager {
         const ffprobeOutput = await execFilePromise('ffprobe', [
             '-loglevel', 'error',
             '-print_format', 'json',
-            '-show_entries', 'format=duration:stream=codec_name,height,width,avg_frame_rate,sample_rate',
+            '-show_entries', 'format=duration,size:stream=codec_name,height,width,avg_frame_rate,sample_rate',
             fileName
         ]);
         return JSON.parse(ffprobeOutput.stdout);
@@ -59,13 +61,22 @@ class VideoManager {
         await VideoManager.scan();
         fs.watch(VideoManager.videosDir, {
             persistent: false
-        }, async () => {
-            if (!VideoManager.scanning) {
-                VideoManager.scanning = true;
-                await VideoManager.scan();
-                VideoManager.scanning = false;
+        }, (eventName) => {
+            if (eventName === 'rename') {
+                //change event is fired whenever a file's contents is changed
+                //so copying a file into the directory triggers change hundreds of times
+                VideoManager.rescan();
             }
         });
+        setInterval(VideoManager.rescan, RESCAN_INTERVAL);
+    }
+
+    static async rescan() {
+        if (!VideoManager.scanning) {
+            VideoManager.scanning = true;
+            await VideoManager.scan();
+            VideoManager.scanning = false;
+        }
     }
 
     static async scan() {
@@ -132,7 +143,7 @@ class VideoManager {
             } else {
                 console.warn('not a video file:', relPath);
             }
-            VideoManager.db[cacheKey] = {info, thumbnailFileName, fileName};
+            VideoManager.db[cacheKey] = {info, thumbnailFileName, relPath};
         }
 
         for (let oldThumbnail of Object.keys(prevThumbnails)) {
