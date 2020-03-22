@@ -70,6 +70,11 @@ const init = async () => {
     await server.start();
     console.log('Server running on %s', server.info.uri);
 
+    process.on('SIGINT', async () => {
+        await server.stop();
+        process.exit(0);
+    });
+
 };
 
 process.on('unhandledRejection', err => {
