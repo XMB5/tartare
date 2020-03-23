@@ -56,7 +56,9 @@ const init = async () => {
         path: '/thumb/{any*}',
         handler: {
             directory: {
-                path: VideoManager.thumbnailDir
+                path: VideoManager.thumbnailDir,
+                etagMethod: 'simple',
+                index: false
             }
         }
     });
