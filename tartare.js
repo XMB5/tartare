@@ -47,7 +47,7 @@ const init = async () => {
         handler: {
             directory: {
                 path: VideoManager.videosDir,
-                etagMethod: 'simple'
+                etagMethod: false
             }
         }
     });
