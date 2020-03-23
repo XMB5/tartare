@@ -141,7 +141,7 @@ class VideoManager {
                 }
                 VideoManager.thumbnails[thumbnailFileName] = true;
             } else {
-                console.warn('not a video file:', relPath);
+                //console.warn('not a video file:', relPath);
             }
             VideoManager.db[cacheKey] = {info, thumbnailFileName, relPath};
         }
