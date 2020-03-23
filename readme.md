@@ -15,7 +15,7 @@ HTML5 Video Library
 ## Installation
 
 ### Install through docker
-- `docker run -p 3000:3000 -v '/my/videos:/videos:ro' -v 'tartare_cache:/cache' xmb5/tartare`
+- `docker run -p 127.0.0.1:3000:3000/tcp -v '/my/videos:/videos:ro' -v 'tartare_cache:/cache' xmb5/tartare`
     - now go to http://localhost:3000
 - [Sample docker-compose.yml](docker-compose.yml)
 
