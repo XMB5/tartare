@@ -1,7 +1,12 @@
-version: '3.7'
+version: '3.5'
 services:
   tartare:
     image: 'xmb5/tartare'
     volumes:
       - '/my/videos:/videos:ro'
       - 'tartare_cache:/cache'
+    ports:
+      - '127.0.0.1:3000:3000/tcp'
+    stop_signal: 'SIGINT'
+volumes:
+  tartare_cache:
