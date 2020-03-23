@@ -1,4 +1,6 @@
-FROM node:13
+FROM node:13-stretch
+
+RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
 
 ENV TARTARE_PORT=3000
 ENV TARTARE_HOST=0.0.0.0
