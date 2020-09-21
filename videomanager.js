@@ -44,8 +44,8 @@ class VideoManager {
         const outFile = path.join(VideoManager.thumbnailDir, thumbnailFileName);
         await execFilePromise('ffmpeg', [
             '-loglevel', 'error',
-            '-i', fileName,
             '-ss', secondToCapture,
+            '-i', fileName,
             '-vframes', '1',
             '-vf', `scale=-1:${THUMBNAIL_SIZE},crop=${THUMBNAIL_SIZE}:${THUMBNAIL_SIZE}`,
             '-n',
