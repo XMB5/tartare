@@ -32,7 +32,7 @@ class VideoManager {
         const ffprobeOutput = await execFilePromise('ffprobe', [
             '-loglevel', 'error',
             '-print_format', 'json',
-            '-show_entries', 'format=duration,size:stream=codec_name,height,width,avg_frame_rate,sample_rate',
+            '-show_entries', 'format=duration,size:stream=codec_type,codec_name,height,width,avg_frame_rate,sample_rate',
             fileName
         ]);
         return JSON.parse(ffprobeOutput.stdout);
@@ -40,7 +40,7 @@ class VideoManager {
 
     static async generateThumbnail(fileName, thumbnailFileName, info) {
         console.log('generate thumbnail for', fileName);
-        const secondToCapture = Math.min(5, parseFloat(info.format.duration) / 12);
+        const secondToCapture = Math.min(120, parseFloat(info.format.duration) / 12);
         const outFile = path.join(VideoManager.thumbnailDir, thumbnailFileName);
         await execFilePromise('ffmpeg', [
             '-loglevel', 'error',
@@ -85,7 +85,7 @@ class VideoManager {
         let prevInfos = VideoManager.dbInfos;
         if (!prevInfos) {
             try {
-                prevInfos = JSON.parse(await readFilePromise(VideoManager.prevInfosFile));
+                prevInfos = JSON.parse(await readFilePromise(VideoManager.prevInfosFile, 'utf8'));
             } catch (e) {
                 if (e.code === 'ENOENT') {
                     //cache doesn't exist yet

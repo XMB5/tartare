@@ -1,11 +1,4 @@
 (async function() {
-    function formatFileName(fileName) {
-        //remove directory and extension from file name
-        const slashIndex = fileName.lastIndexOf('/');
-        const dotIndex = fileName.lastIndexOf('.');
-        return fileName.substring(slashIndex + 1, dotIndex);
-    }
-
     function formatDuration(seconds) {
         const hours = Math.floor(seconds / 3600);
         seconds -= hours * 3600;
@@ -61,8 +54,13 @@
         return bytesPerSec + 'bps';
     }
 
-    const fetchRes = await fetch("/api/list.json");
-    const list = Object.values(await fetchRes.json()).filter(x => x.info.format.duration);
+    const listPromise = await fetch('/api/list');
+    const authPromise = await fetch('/api/auth');
+    const [listRes, authRes] = await Promise.all([listPromise, authPromise]);
+    const list = Object.values(await listRes.json()).filter(x => x.info.format.duration);
+    const authJson = await authRes.json();
+    const authStr = authJson.password ? `${authJson.username}:${authJson.password}@` : '';
+
     const container = $('.container');
     let row;
     for (let i = 0; i < list.length; i++) {
@@ -90,13 +88,13 @@
             </div>
         </div>`);
         col.find('img').attr('src', '/thumb/' + item.thumbnailFileName);
-        col.find('.card-title').text(formatFileName(item.relPath));
+        col.find('.card-title').text(item.relPath);
         let videoStream;
         let audioStream;
         for (let stream of item.info.streams) {
-            if (stream.width) {
+            if (stream.codec_type === 'video' && !videoStream) {
                 videoStream = stream;
-            } else if (stream.sample_rate) {
+            } else if (stream.codec_type === 'audio' && !audioStream) {
                 audioStream = stream;
             }
         }
@@ -120,7 +118,7 @@
         addInfoRow('Frame Rate', formatFrameRate(videoStream.avg_frame_rate));
         addInfoRow('Video Codec', videoStream.codec_name);
         addInfoRow('Audio Codec', audioStream.codec_name);
-        const videoUrl = window.location.protocol + '//' + window.location.host + '/videos/' + encodeURIComponent(item.relPath);
+        const videoUrl = window.location.protocol + '//' + authStr + window.location.host + '/videos/' + encodeURIComponent(item.relPath);
         col.find('input').val(videoUrl);
         row.append(col);
     }

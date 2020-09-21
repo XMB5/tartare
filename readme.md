@@ -52,6 +52,11 @@ All options are passed through environment variables
     - port for web server to listen on
     - optional
         - default: 3000
+- `TARTARE_PASSWORD`
+    - http basic authentication password
+    - username can be anything
+    - optional
+        - default: no password
 
 ## License
 Released under the [MIT License](license.md)
