@@ -51,6 +51,9 @@ const init = async () => {
                         password: passwordGuess
                     }
                 };
+            },
+            unauthorizedAttributes: {
+                realm: ''
             }
         });
         server.auth.default('simple');
